@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 import queue
 import socket
+import subprocess
+import sys
 import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext, ttk
@@ -153,7 +155,12 @@ class App:
 
     def open_folder(self):
         if self.output:
-            os.startfile(self.output)
+            if sys.platform == "win32":
+                os.startfile(self.output)
+            elif sys.platform == "darwin":
+                subprocess.Popen(["open", str(self.output)])
+            else:
+                subprocess.Popen(["xdg-open", str(self.output)])
 
     def close(self):
         if self.running:
