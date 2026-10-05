@@ -29,6 +29,20 @@ Keep these files together when copying or uploading the project. Run `python -m 
 
 Keys and database passwords are kept in memory and never intentionally written to settings, answers or logs. The Java subprocess receives the database credentials it needs, but not the OpenAI API key.
 
+## Linux
+
+Install Python 3 with Tkinter, a JDK 17+, and Xephyr (Arch: `python tk jdk-openjdk xorg-server-xephyr`; Debian/Ubuntu: `python3-venv python3-tk default-jdk xserver-xephyr`). Then:
+
+```sh
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+./run.sh
+```
+
+`run.sh` starts a nested Xephyr X server on the first free display (from `:2`, 1366x768), runs the app inside it with the venv's Python, and stops Xephyr when the app exits. This is needed because `java.awt.Robot` screenshots are unreliable under XWayland (on Hyprland every capture failed the "obscured" check); Xephyr gives Java a real X11 screen. Generated program windows appear inside the Xephyr window. Override the size or starting display with `XEPHYR_SIZE` / `XEPHYR_DISPLAY`.
+
+MariaDB works in place of MySQL for the JDBC questions: the bundled MySQL Connector/J handles basic JDBC against it. Start the server, create a user that can create `tutorial_...` databases, and enter that login in Settings.
+
 ## Output
 
 Each run creates its own directory inside `output`. The Word document contains the tutorial title, name, registration number, subject, each original question, labelled Java files, database setup where applicable, and actual output screenshots. Code has no comments and uses four-space indentation and same-line braces. The program requests this formatting from the AI; it does not claim to disguise authorship or use the C language.
